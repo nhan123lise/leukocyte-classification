@@ -153,7 +153,7 @@ learn = load_learner('outputs/model.pkl')
    - Complete methodology
 
 2. **Model File**: ✅ `outputs/model.pkl`
-   - Size: 84MB
+   - Size: 45MB
    - Architecture: ResNet18
    - Loads with: `load_learner('model.pkl')`
    - Performance: 99.47% test, 100% external
@@ -161,7 +161,7 @@ learn = load_learner('outputs/model.pkl')
 3. **Submission Package**:
    ```
    LastName1_LastName2_LastName3_LastName4.zip
-   ├── model.pkl          # 84MB, ResNet18
+   ├── model.pkl          # 45MB, ResNet18
    └── report.pdf         # 2 pages, 622KB
    ```
 
@@ -192,10 +192,100 @@ learn = load_learner('outputs/model.pkl')
 - [fastai documentation](https://docs.fast.ai/)
 - [Project PDF](Project_aplication_Computer_vision.pdf) - Official course guidelines
 
+## Submission Checklist
+
+### ⚠️ Required Actions Before Submission
+
+**1. Add Student Information to Report** ❌
+The PDF report needs student names and IDs. Either:
+- Edit `report.tex` and recompile, OR
+- Use a PDF editor to add names/IDs to `report.pdf`
+
+Required information:
+- Student 1: Name and ID
+- Student 2: Name and ID
+- Student 3: Name and ID
+- Student 4: Name and ID (if applicable)
+
+**2. Test Model with Provided Notebook** ⚠️
+Verify model loads correctly using the exact test procedure:
+```bash
+# Copy model to test location
+cp outputs/model.pkl "Dataset and Notebook-20251115/"
+
+# Open and run the provided test notebook
+jupyter notebook "Dataset and Notebook-20251115/test your model.ipynb"
+
+# Verify:
+# - Model loads with: load_learner('model.pkl')
+# - Predictions work on sample images
+# - No errors or warnings
+```
+
+**3. Check Atenea Upload Size Limit** ⚠️
+- Current model size: **45MB**
+- If this exceeds Atenea's limit:
+  1. Upload `outputs/model.pkl` to Google Drive
+  2. Grant access to: `kevin.barrera@upc.edu`
+  3. Add Drive link in `report.pdf`
+
+**4. Create Submission ZIP** ❌
+**Naming format:**
+```
+LastName_Student1_LastName_Student2_LastName_Student3_LastName_Student4.zip
+```
+
+**Steps:**
+```bash
+# Prepare submission folder
+mkdir -p submission
+cp outputs/model.pkl submission/
+cp report.pdf submission/
+
+# Create ZIP (replace with actual student last names)
+cd submission
+zip ../Garcia_Lopez_Martinez_Rodriguez.zip model.pkl report.pdf
+
+# Verify ZIP contents
+unzip -l ../Garcia_Lopez_Martinez_Rodriguez.zip
+```
+
+**ZIP must contain exactly:**
+- `model.pkl` (45MB, ResNet18)
+- `report.pdf` (2 pages, 622KB)
+
+### Final Verification Checklist
+
+- [ ] Student names and IDs added to report.pdf
+- [ ] Model tested with `test your model.ipynb`
+- [ ] Model loads with `load_learner()` only
+- [ ] ZIP file named correctly (LastName_LastName_LastName_LastName.zip)
+- [ ] ZIP contains both model.pkl and report.pdf
+- [ ] Google Drive link added to report (if model exceeds upload limit)
+- [ ] Drive access granted to kevin.barrera@upc.edu (if using Drive)
+
+### Performance Summary
+
+**External Dataset:**
+- Achieved: **100% accuracy** (9/9 monocyte images)
+- Requirement: ≥92% for grade 10
+
+**Requirements Met:**
+- ✅ Model loads with `load_learner()` only
+- ✅ 2-page PDF report with all sections
+- ✅ Training/validation/test plots
+- ✅ Confusion matrix
+- ✅ Complete reproducibility
+
 ## Deadline
 
-December 11, 2025, 23:59 CEST
+**Due:** December 11, 2025, 23:59 CEST
+
+**Important:**
+- Late submissions: **30% deduction per day**
+- Plagiarism: **Zero tolerance** - all involved students receive grade 0
+- Submit to: **Atenea** (Block 2)
 
 ---
 
-**Good luck!** 🚀
+**Good luck with your submission!** 🚀
