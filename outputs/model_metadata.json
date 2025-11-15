@@ -1,0 +1,22 @@
+{
+  "export_timestamp": "2025-11-15T10:48:40.377633",
+  "architecture": "resnet18",
+  "image_size": 224,
+  "batch_size": 32,
+  "random_seed": 42,
+  "validation_accuracy": 0.9946666955947876,
+  "validation_loss": 0.01427890732884407,
+  "external_accuracy": 1.0,
+  "phase1_epochs": 20,
+  "phase2_epochs": 20,
+  "phase1_lr": 0.001,
+  "phase2_lr": 0.0001,
+  "classes": [
+    "basophil",
+    "eosinophil",
+    "lymphocyte",
+    "monocyte",
+    "neutrophil"
+  ],
+  "best_model_loaded": true
+}

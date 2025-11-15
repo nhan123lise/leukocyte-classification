@@ -1,0 +1,82 @@
+# Python
+__pycache__/
+*.py[cod]
+*$py.class
+*.so
+.Python
+env/
+venv/
+ENV/
+build/
+develop-eggs/
+dist/
+downloads/
+eggs/
+.eggs/
+lib/
+lib64/
+parts/
+sdist/
+var/
+wheels/
+*.egg-info/
+.installed.cfg
+*.egg
+
+# Jupyter Notebook
+.ipynb_checkpoints
+*.ipynb_checkpoints/
+
+# Environment
+.env
+.venv
+
+# Model files
+*.pkl
+*.pth
+*.pt
+*.h5
+*.onnx
+
+# # Dataset (too large for git)
+# Dataset*/
+# dataset*/
+# test_second_dataset/
+
+# macOS
+.DS_Store
+.AppleDouble
+.LSOverride
+
+# IDEs
+.vscode/
+.idea/
+*.swp
+*.swo
+*~
+
+# LaTeX auxiliary files
+*.aux
+*.log
+*.out
+*.toc
+*.synctex.gz
+*.fls
+*.fdb_latexmk
+
+# Project specific
+model.pkl
+*.zip
+
+# Test/verification scripts (not needed for submission)
+test_model_loading.py
+verify_model_submission.py
+debug_predictions.py
+
+# Output files (keep metadata, ignore large model files)
+outputs/models/*.pth
+outputs/models/*.pkl
+
+# Keep PDFs and markdown reports for version control
+# report.pdf is tracked
+# PROJECT_REPORT.md is tracked
