@@ -48,37 +48,37 @@ Data augmentation was extensively applied to improve generalization: random rota
 \section{Results}
 
 \subsection{Overall Performance}
-The model achieved exceptional performance on the test set with \textbf{99.47\% accuracy} (373 out of 375 images correctly classified). Only two images were misclassified, both involving basophils incorrectly predicted as neutrophils.
+The model achieved exceptional performance on the test set with \textbf{99.47\% accuracy} (373 out of 375 images correctly classified). Only two images were misclassified: one basophil and one lymphocyte, both incorrectly predicted as neutrophils.
 
 \begin{table}[h]
 \centering
-\caption{Per-Class Performance Metrics}
+\caption{Classification Performance Metrics}
 \label{tab:metrics}
 \small
 \begin{tabular}{@{}lcccc@{}}
 \toprule
 \textbf{Class} & \textbf{Precision} & \textbf{Recall} & \textbf{F1-Score} & \textbf{Support} \\
 \midrule
-Basophil   & 0.9733 & 1.0000 & 0.9865 & 73 \\
+Basophil   & 1.0000 & 0.9867 & 0.9933 & 75 \\
 Eosinophil & 1.0000 & 1.0000 & 1.0000 & 75 \\
-Lymphocyte & 1.0000 & 1.0000 & 1.0000 & 75 \\
+Lymphocyte & 1.0000 & 0.9867 & 0.9933 & 75 \\
 Monocyte   & 1.0000 & 1.0000 & 1.0000 & 75 \\
-Neutrophil & 1.0000 & 0.9733 & 0.9865 & 75 \\
+Neutrophil & 0.9740 & 1.0000 & 0.9868 & 75 \\
 \midrule
-\textbf{Overall} & \textbf{0.9947} & \textbf{0.9947} & \textbf{0.9947} & \textbf{375} \\
+\textbf{Accuracy} & -- & -- & \textbf{0.9947} & \textbf{375} \\
 \bottomrule
 \end{tabular}
 \end{table}
 
-Table~\ref{tab:metrics} shows that three classes (eosinophil, lymphocyte, monocyte) achieved perfect 100\% scores across all metrics, while basophil and neutrophil showed minimal errors (97.33\% on one metric each).
+Table~\ref{tab:metrics} shows two classes (eosinophil, monocyte) achieved perfect scores, with three others showing 1-2 errors each.
 
 \subsection{Confusion Matrix}
-Figure~\ref{fig:confusion} presents the confusion matrix for the test set. The matrix shows near-perfect classification with only 2 errors out of 375 predictions (99.47\% accuracy). Both errors involved basophils predicted as neutrophils - representing less than 1\% error rate with no significant confusion patterns.
+Figure~\ref{fig:confusion} presents the confusion matrix for the test set, demonstrating exceptional classification performance with \textbf{no significant confusion patterns}. The matrix shows 99.47\% accuracy with only 2 isolated errors out of 375 predictions (one basophil and one lymphocyte, both predicted as neutrophils), representing a negligible <1\% error rate.
 
 \begin{figure}[h]
 \centering
 \includegraphics[width=0.95\linewidth]{outputs/figures/confusion_matrix_test.png}
-\caption{Confusion matrix on test set showing near-perfect classification with only 2 errors out of 375 predictions.}
+\caption{Confusion matrix showing near-perfect classification (99.47\% accuracy) with no significant confusion patterns - only 2 isolated errors.}
 \label{fig:confusion}
 \end{figure}
 
@@ -112,12 +112,12 @@ Figure~\ref{fig:perclass} visualizes precision, recall, and F1-scores for each c
 
 \section{Error Analysis}
 
-Only 2 out of 375 test images were misclassified (both basophils predicted as neutrophils), representing a 99.47\% accuracy rate with \textbf{no significant confusion patterns}. This exceptional performance demonstrates:
+Only 2 out of 375 test images were misclassified (one basophil and one lymphocyte, both predicted as neutrophils), representing a 99.47\% accuracy rate with \textbf{no significant confusion patterns}. This exceptional performance demonstrates:
 
 \begin{itemize}
     \item \textbf{Robust Classification:} Model distinguishes all 5 cell types with near-perfect accuracy
     \item \textbf{No Systematic Errors:} The 2 errors (<1\%) show no pattern indicating class confusion
-    \item \textbf{Balanced Performance:} Three classes achieve 100\% accuracy; two classes at 97.33\%
+    \item \textbf{Balanced Performance:} Two classes achieve 100\%; three classes with 1-2 errors each
 \end{itemize}
 
 The model demonstrates excellent discrimination capability across all leukocyte types with negligible errors.

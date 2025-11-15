@@ -124,7 +124,7 @@ The model achieved exceptional performance on the held-out test set:
 
 ![Confusion Matrix - Test Set](outputs/figures/confusion_matrix_test.png)
 
-*Figure 5: Confusion matrix showing near-perfect classification on test set. Only 2 basophil images were misclassified as neutrophils.*
+*Figure 5: Confusion matrix showing near-perfect classification on test set. Only 2 images were misclassified: one basophil and one lymphocyte, both predicted as neutrophils.*
 
 ### 3.2 Per-Class Performance
 
@@ -138,17 +138,18 @@ All five classes demonstrate exceptional performance:
 
 | Class | Precision | Recall | F1-Score | Support |
 |-------|-----------|--------|----------|---------|
-| Basophil | 0.9733 | 1.0000 | 0.9865 | 73 |
+| Basophil | 1.0000 | 0.9867 | 0.9933 | 75 |
 | Eosinophil | 1.0000 | 1.0000 | 1.0000 | 75 |
-| Lymphocyte | 1.0000 | 1.0000 | 1.0000 | 75 |
+| Lymphocyte | 1.0000 | 0.9867 | 0.9933 | 75 |
 | Monocyte | 1.0000 | 1.0000 | 1.0000 | 75 |
-| Neutrophil | 1.0000 | 0.9733 | 0.9865 | 75 |
+| Neutrophil | 0.9740 | 1.0000 | 0.9868 | 75 |
+| **Accuracy** | -- | -- | **0.9947** | **375** |
 
 **Key Observations:**
-- Eosinophil, Lymphocyte, and Monocyte: Perfect 100% across all metrics
-- Basophil: 97.33% precision, 100% recall (2 false positives)
-- Neutrophil: 100% precision, 97.33% recall (2 false negatives)
-- The only errors: 2 basophils were predicted as neutrophils
+- Eosinophil and Monocyte: Perfect 100% across all metrics
+- Basophil and Lymphocyte: 100% precision, 98.67% recall (1 false negative each)
+- Neutrophil: 97.40% precision, 100% recall (2 false positives)
+- The only errors: 1 basophil and 1 lymphocyte were predicted as neutrophils
 
 ### 3.3 Validation Set Performance
 
@@ -197,11 +198,11 @@ Out of 375 test images, only 2 were misclassified:
 
 ![Misclassified Examples](outputs/figures/incorrect_predictions_test.png)
 
-*Figure 10: The 2 misclassified images - both were basophils incorrectly predicted as neutrophils*
+*Figure 10: The 2 misclassified images - one basophil and one lymphocyte, both incorrectly predicted as neutrophils*
 
 **Analysis:**
 - **Error Rate:** <1% (2 out of 375 images) - no significant confusion patterns
-- **Both Errors:** Basophils predicted as neutrophils
+- **The 2 Errors:** One basophil and one lymphocyte, both predicted as neutrophils
 - **Key Finding:** This minimal error rate demonstrates the model's robust discrimination across all 5 leukocyte types with no systematic classification issues
 
 ### 4.2 Correctly Classified Examples
