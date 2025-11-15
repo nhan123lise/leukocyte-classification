@@ -73,7 +73,7 @@ Neutrophil & 0.9740 & 1.0000 & 0.9868 & 75 \\
 Table~\ref{tab:metrics} shows two classes (eosinophil, monocyte) achieved perfect scores, with three others showing 1-2 errors each.
 
 \subsection{Confusion Matrix}
-Figure~\ref{fig:confusion} presents the confusion matrix for the test set, demonstrating exceptional classification performance with \textbf{no significant confusion patterns}. The matrix shows 99.47\% accuracy with only 2 isolated errors out of 375 predictions (one basophil and one lymphocyte, both predicted as neutrophils), representing a negligible <1\% error rate.
+Figure~\ref{fig:confusion} presents the confusion matrix for the test set, demonstrating exceptional classification performance with \textbf{no significant confusion patterns}. The matrix shows 99.47\% accuracy with only 2 isolated errors out of 375 predictions (one basophil and one lymphocyte, both predicted as neutrophils), representing a 0.53\% error rate.
 
 \begin{figure}[h]
 \centering
@@ -116,7 +116,7 @@ Only 2 out of 375 test images were misclassified (one basophil and one lymphocyt
 
 \begin{itemize}
     \item \textbf{Robust Classification:} Model distinguishes all 5 cell types with near-perfect accuracy
-    \item \textbf{No Systematic Errors:} The 2 errors (<1\%) show no pattern indicating class confusion
+    \item \textbf{No Systematic Errors:} The 2 errors (0.53\%) show no pattern indicating class confusion
     \item \textbf{Balanced Performance:} Two classes achieve 100\%; three classes with 1-2 errors each
 \end{itemize}
 
