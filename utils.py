@@ -5,6 +5,32 @@ Utility functions for the leukocyte classification project
 import random
 import numpy as np
 import os
+from PIL import Image
+
+
+# Grayscale transform for fastai - must be defined here for model export/load compatibility
+try:
+    from fastai.vision.all import Transform, PILImage
+
+    class Grayscale(Transform):
+        """
+        Convert image to grayscale (3-channel for compatibility with pretrained models).
+
+        This transform removes color/staining information, forcing the model to learn
+        morphological features (shape, texture, granule patterns) instead of color.
+        """
+        def encodes(self, img: PILImage):
+            # Convert to grayscale then back to RGB (3 channels for pretrained models)
+            return img.convert('L').convert('RGB')
+
+except ImportError:
+    # Fallback if fastai not available
+    class Grayscale:
+        """Grayscale transform (fallback without fastai)"""
+        def __call__(self, img):
+            if isinstance(img, Image.Image):
+                return img.convert('L').convert('RGB')
+            return img
 
 
 def set_seed(seed=42):
@@ -33,6 +59,15 @@ def set_seed(seed=42):
         # Make PyTorch deterministic
         torch.backends.cudnn.deterministic = True
         torch.backends.cudnn.benchmark = False
+
+        # Enable deterministic algorithms globally
+        try:
+            torch.use_deterministic_algorithms(True, warn_only=True)
+        except Exception:
+            pass  # Some operations don't have deterministic implementations
+
+        # CUBLAS workspace config for deterministic behavior
+        os.environ['CUBLAS_WORKSPACE_CONFIG'] = ':4096:8'
 
         # For MPS (Apple Silicon)
         if torch.backends.mps.is_available():

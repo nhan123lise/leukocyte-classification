@@ -80,3 +80,4 @@ outputs/models/*.pkl
 # Keep PDFs and markdown reports for version control
 # report.pdf is tracked
 # PROJECT_REPORT.md is tracked
+/data_external*

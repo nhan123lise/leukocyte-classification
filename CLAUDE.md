@@ -32,10 +32,13 @@ python -c "import torch, fastai; print(f'PyTorch: {torch.__version__}, fastai: {
 # 1. Data Preparation (creates train/val/test split)
 python 01_data_preparation.py
 
-# 2. Model Training (run notebook)
+# 2. External Data Preparation (deduplicates and organizes external datasets)
+python 02_external_data_preparation.py
+
+# 3. Model Training (run notebook)
 jupyter notebook notebooks/02_model_training.ipynb
 
-# 3. Model Evaluation (run notebook)
+# 4. Model Evaluation (run notebook)
 jupyter notebook notebooks/03_model_evaluation.ipynb
 ```
 
@@ -82,6 +85,22 @@ rm -f report.aux report.log report.out
 - Confusion matrices and per-class metrics
 - **Output**: 13 visualization figures in `outputs/figures/`
 
+**External Data Preparation** (`02_external_data_preparation.py`)
+- Loads external datasets from `data_external/`:
+  - `dataset/`: 16,633 images (Train/Test-A/Test-B)
+  - `PBC_dataset_normal_DIB/`: 10,299 target class images
+- Normalizes class names (handles case differences)
+- Filters to 5 target classes (excludes erythroblast, ig, platelet)
+- Deduplicates using MD5 (exact) and pHash/dHash (perceptual)
+- Removes duplicates of original training data (prevents data leakage)
+- **Output**: `data_external_unified/` (24,417 unique images), `outputs/external_manifest.csv`
+
+**Deduplication Module** (`deduplication.py`)
+- Reusable image deduplication with MD5, pHash, dHash algorithms
+- Priority-based resolution (lower priority kept on duplicates)
+- Cross-dataset duplicate detection
+- Configurable similarity thresholds (default: Hamming distance ≤ 8)
+
 ### Key Design Decisions
 
 **Why ResNet18 (not ResNet34/50)?**
@@ -119,14 +138,27 @@ rm -f report.aux report.log report.out
 ```
 cv-nhan/
 ├── 01_data_preparation.py          # Data splitting script
+├── 02_external_data_preparation.py # External data dedup & organization
+├── deduplication.py                # Reusable image deduplication module
 ├── utils.py                        # Seed management utilities
 ├── notebooks/
 │   ├── 02_model_training.ipynb     # Two-phase ResNet18 training
 │   └── 03_model_evaluation.ipynb   # Comprehensive evaluation
+├── data_external/                  # Raw external datasets
+│   ├── dataset/                    # 16,633 images (Train/Test-A/Test-B)
+│   └── PBC_dataset_normal_DIB/     # 17,093 images (8 classes)
+├── data_external_unified/          # Deduplicated external validation set
+│   ├── basophil/                   # 1,013 images
+│   ├── eosinophil/                 # 3,677 images
+│   ├── lymphocyte/                 # 4,323 images
+│   ├── monocyte/                   # 1,714 images
+│   └── neutrophil/                 # 13,690 images
 ├── outputs/
 │   ├── data_split.csv              # 70/15/15 split (reproducible)
 │   ├── model.pkl                   # Trained ResNet18 (99.47% test, 100% external)
 │   ├── model_metadata.json         # Export timestamp, hyperparams, metrics
+│   ├── external_manifest.csv       # External dataset manifest with hashes
+│   ├── dedup_report.json           # Deduplication statistics
 │   └── figures/                    # 13 visualization figures
 ├── report.tex                      # LaTeX source for 2-page PDF
 ├── report.pdf                      # Scientific paper format
@@ -147,6 +179,7 @@ cv-nhan/
 - pandas, numpy, scikit-learn
 - matplotlib, seaborn
 - Pillow
+- imagehash (for deduplication)
 
 ## Model Performance Summary
 
@@ -207,6 +240,35 @@ python 01_data_preparation.py
 md5 outputs/data_split.csv  # Compare with previous hash
 ```
 
+### Reprocess External Data
+```bash
+# Re-run external data preparation (regenerates unified dataset)
+python 02_external_data_preparation.py
+
+# Check deduplication results
+cat outputs/dedup_report.json | python -m json.tool
+```
+
+### Using Deduplication Module
+```python
+from deduplication import ImageDeduplicator
+
+# Initialize with thresholds
+dedup = ImageDeduplicator(phash_threshold=8, dhash_threshold=8)
+
+# Add datasets with priority (lower = keep preferentially)
+dedup.add_dataset("original", [(path, label) for path, label in images], priority=0)
+dedup.add_dataset("new_data", [(path, label) for path, label in new_images], priority=1)
+
+# Run deduplication
+dedup.compute_hashes()
+report = dedup.find_duplicates()
+unique = dedup.get_unique_images()
+
+# Save report
+dedup.generate_report("outputs/my_dedup_report.json")
+```
+
 ## Important Notes
 
 **Seed Management**:
@@ -222,10 +284,12 @@ md5 outputs/data_split.csv  # Compare with previous hash
   4. Export model
   5. Verify exported model loads
 
-**External Dataset Limitation**:
-- Contains only monocyte images (9 samples)
-- 100% accuracy achieved, but only tests 1 of 5 classes
-- Full multi-class external validation recommended for production
+**External Validation Dataset**:
+- Original: 9 monocyte samples (100% accuracy achieved)
+- Expanded: 24,417 deduplicated images across all 5 classes from `data_external_unified/`
+  - basophil: 1,013 | eosinophil: 3,677 | lymphocyte: 4,323 | monocyte: 1,714 | neutrophil: 13,690
+- 2,514 exact duplicates removed (MD5 match with original training data)
+- Uses symlinks to save disk space
 
 **LaTeX Compilation**:
 - Requires pdflatex (install via MacTeX or BasicTeX)
