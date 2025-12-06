@@ -4,14 +4,15 @@ This file provides guidance to Claude Code (claude.ai/code) when working with co
 
 ## Project Overview
 
-**Completed Computer Vision Project**: Leukocyte (white blood cell) classification using ResNet18 with transfer learning.
+**Completed Computer Vision Project**: Leukocyte (white blood cell) classification using ResNet34 with transfer learning.
 
-**Current Status**: ✅ Production-ready model achieving 99.47% test accuracy and 100% external validation.
+**Current Status**: Production-ready model achieving 99.20% test accuracy and 100% external validation.
 
 **Dataset**: 2,500 labeled images (500 per class) of 5 leukocyte types: basophil, eosinophil, lymphocyte, monocyte, neutrophil.
 
-**Key Achievement**: ResNet18 model achieves:
-- Test Set: 99.47% accuracy (373/375 correct)
+**Key Achievement**: ResNet34 model achieves:
+- Validation Set: 99.47% accuracy (373/375 correct)
+- Test Set: 99.20% accuracy (372/375 correct)
 - External Dataset: 100% accuracy (9/9 monocyte images)
 - Fully reproducible with seed=42
 
@@ -46,7 +47,7 @@ jupyter notebook notebooks/03_model_evaluation.ipynb
 
 ```bash
 # Verify model loads correctly
-python -c "from fastai.vision.all import load_learner; learn = load_learner('outputs/model.pkl'); print('✓ Model loads successfully')"
+python -c "from fastai.vision.all import load_learner; learn = load_learner('outputs/model.pkl'); print('Model loads successfully')"
 ```
 
 ### Report Generation
@@ -71,19 +72,21 @@ rm -f report.aux report.log report.out
 - **Output**: `outputs/data_split.csv` (reproducible split with seed=42)
 
 **Stage 2: Model Training** (`notebooks/02_model_training.ipynb`)
-- Architecture: ResNet18 (pretrained on ImageNet)
+- Architecture: ResNet34 (pretrained on ImageNet)
 - Two-phase training:
-  - Phase 1: 20 epochs frozen backbone (LR=0.001, patience=3)
-  - Phase 2: 20 epochs fine-tuning (LR=0.0001, patience=5)
-- Data augmentation: rotations (±180°), flips, crops (75-100%), warping, lighting
+  - Phase 1: 30 epochs frozen backbone (LR=0.001, patience=8)
+  - Phase 2: 30 epochs fine-tuning (LR=0.0001, patience=8)
+- Data augmentation for stain robustness:
+  - Geometric: rotation ±180°, flips, crop 75-100%, warp 0.2
+  - Color: brightness/contrast ±40%, saturation ±40%, hue ±10%
 - Early stopping to prevent overfitting
-- **Output**: `outputs/model.pkl` (84MB), `outputs/model_metadata.json`
+- **Output**: `outputs/model.pkl`, `outputs/model_metadata.json`
 
 **Stage 3: Model Evaluation** (`notebooks/03_model_evaluation.ipynb`)
 - Test set evaluation (375 images)
 - External dataset validation (9 monocyte images)
 - Confusion matrices and per-class metrics
-- **Output**: 13 visualization figures in `outputs/figures/`
+- **Output**: Visualization figures in `outputs/figures/`
 
 **External Data Preparation** (`02_external_data_preparation.py`)
 - Loads external datasets from `data_external/`:
@@ -99,32 +102,34 @@ rm -f report.aux report.log report.out
 - Reusable image deduplication with MD5, pHash, dHash algorithms
 - Priority-based resolution (lower priority kept on duplicates)
 - Cross-dataset duplicate detection
-- Configurable similarity thresholds (default: Hamming distance ≤ 8)
+- Configurable similarity thresholds (default: Hamming distance <= 8)
 
 ### Key Design Decisions
 
-**Why ResNet18 (not ResNet34/50)?**
-- 11.7M parameters vs 21.8M for ResNet34 (46% reduction)
-- Achieves perfect external validation (100%)
-- No overfitting on 2,500 image dataset
-- Faster training and inference
-- Optimal capacity for 5-class task
+**Why ResNet34?**
+- 21.8M parameters - good capacity for 5-class medical imaging task
+- Achieves 99.20% test accuracy and 100% external validation
+- Strong color augmentation ensures robustness to staining variations
+- Two-phase training with early stopping prevents overfitting
 
 **Two-Phase Training Strategy**:
-1. Freeze backbone, train classifier head → adapt to leukocyte domain
-2. Unfreeze all layers, fine-tune → optimize deep features
-3. Early stopping prevents overfitting
+1. Freeze backbone, train classifier head -> adapt to leukocyte domain
+2. Unfreeze all layers, fine-tune -> optimize deep features
+3. Early stopping (patience=8) prevents overfitting
 
-**Data Augmentation**:
+**Data Augmentation for Stain Robustness**:
 - Geometric: rotation ±180°, flips, crop 75-100%, warp factor 0.2
-- Photometric: brightness/contrast factor 0.5
-- Application probability: 75% for affine and lighting transforms
+- Color (via fastai):
+  - `max_lighting=0.4` (brightness/contrast ±40%)
+  - `Saturation(max_lighting=0.4, p=0.75)` (saturation ±40%)
+  - `Hue(max_hue=0.1, p=0.75)` (hue shift ±10%)
+- High probability: `p_affine=0.75`, `p_lighting=0.9`
 
 ### Critical Constraints
 
 **Model Export/Loading**:
-- ✅ **VERIFIED**: Model loads with `load_learner('model.pkl')` only
-- ❌ No custom functions, libraries, or modifications allowed
+- **VERIFIED**: Model loads with `load_learner('model.pkl')` only
+- No custom functions, libraries, or modifications required
 - Export includes full model state, data preprocessing, and class vocabulary
 
 **Reproducibility**:
@@ -140,9 +145,10 @@ cv-nhan/
 ├── 01_data_preparation.py          # Data splitting script
 ├── 02_external_data_preparation.py # External data dedup & organization
 ├── deduplication.py                # Reusable image deduplication module
+├── stain_normalization.py          # Stain normalization utilities (optional)
 ├── utils.py                        # Seed management utilities
 ├── notebooks/
-│   ├── 02_model_training.ipynb     # Two-phase ResNet18 training
+│   ├── 02_model_training.ipynb     # Two-phase ResNet34 training
 │   └── 03_model_evaluation.ipynb   # Comprehensive evaluation
 ├── data_external/                  # Raw external datasets
 │   ├── dataset/                    # 16,633 images (Train/Test-A/Test-B)
@@ -155,23 +161,23 @@ cv-nhan/
 │   └── neutrophil/                 # 13,690 images
 ├── outputs/
 │   ├── data_split.csv              # 70/15/15 split (reproducible)
-│   ├── model.pkl                   # Trained ResNet18 (99.47% test, 100% external)
+│   ├── model.pkl                   # Trained ResNet34 (99.20% test, 100% external)
 │   ├── model_metadata.json         # Export timestamp, hyperparams, metrics
 │   ├── external_manifest.csv       # External dataset manifest with hashes
 │   ├── dedup_report.json           # Deduplication statistics
-│   └── figures/                    # 13 visualization figures
+│   └── figures/                    # Visualization figures
 ├── report.tex                      # LaTeX source for 2-page PDF
 ├── report.pdf                      # Scientific paper format
-├── PROJECT_REPORT.md               # Comprehensive markdown report (16KB)
+├── PROJECT_REPORT.md               # Comprehensive markdown report
 ├── REPRODUCIBILITY.md              # Seed management documentation
 └── requirements.txt                # Python dependencies
 ```
 
 ## Development Environment
 
-**Conda Environment**: `cv` (Python 3.11.8)
+**Conda Environment**: `cv` (Python 3.11)
 - Auto-activated via direnv (`.envrc`)
-- MPS acceleration for Apple Silicon
+- CUDA/MPS acceleration supported
 
 **Key Dependencies**:
 - PyTorch 2.9.1
@@ -180,30 +186,41 @@ cv-nhan/
 - matplotlib, seaborn
 - Pillow
 - imagehash (for deduplication)
+- torchstain (for stain normalization)
 
 ## Model Performance Summary
 
-| Metric | Test Set | External Dataset |
-|--------|----------|------------------|
-| Accuracy | 99.47% | 100% |
-| Errors | 2/375 | 0/9 |
-| Per-class | ~100% all metrics | Perfect monocyte detection |
+| Metric | Validation | Test Set | External Dataset |
+|--------|------------|----------|------------------|
+| Accuracy | 99.47% | 99.20% | 100% |
+| Errors | 2/375 | 3/375 | 0/9 |
 
-**Only Errors**: 2 basophils misclassified as neutrophils (morphologically similar granulocytes)
+**Test Set Errors** (3 total):
+- 2 monocytes misclassified as lymphocyte/neutrophil
+- 1 neutrophil misclassified as monocyte
+
+**Per-Class Test Metrics**:
+| Class | Precision | Recall | F1-Score |
+|-------|-----------|--------|----------|
+| basophil | 1.0000 | 1.0000 | 1.0000 |
+| eosinophil | 1.0000 | 1.0000 | 1.0000 |
+| lymphocyte | 0.9740 | 1.0000 | 0.9868 |
+| monocyte | 0.9865 | 0.9733 | 0.9799 |
+| neutrophil | 1.0000 | 0.9867 | 0.9933 |
 
 ## Deliverables
 
 **Submission Package**:
 ```
 LastName1_LastName2_LastName3_LastName4.zip
-├── model.pkl          # 84MB, ResNet18
-└── report.pdf         # 2 pages, 622KB
+├── model.pkl          # ResNet34
+└── report.pdf         # 2 pages
 ```
 
 **Report Contents**:
-- Architecture: ResNet18 with two-phase training
-- Results: 99.47% test, 100% external
-- Data augmentation details
+- Architecture: ResNet34 with two-phase training
+- Results: 99.20% test, 100% external
+- Data augmentation details (color augmentation for stain robustness)
 - Confusion matrices and training curves
 - Error analysis
 
@@ -218,7 +235,7 @@ jupyter notebook notebooks/02_model_training.ipynb
 
 ### Re-generate Figures
 ```bash
-# Run evaluation notebook to regenerate all 13 figures
+# Run evaluation notebook to regenerate all figures
 jupyter notebook notebooks/03_model_evaluation.ipynb
 ```
 
@@ -249,26 +266,6 @@ python 02_external_data_preparation.py
 cat outputs/dedup_report.json | python -m json.tool
 ```
 
-### Using Deduplication Module
-```python
-from deduplication import ImageDeduplicator
-
-# Initialize with thresholds
-dedup = ImageDeduplicator(phash_threshold=8, dhash_threshold=8)
-
-# Add datasets with priority (lower = keep preferentially)
-dedup.add_dataset("original", [(path, label) for path, label in images], priority=0)
-dedup.add_dataset("new_data", [(path, label) for path, label in new_images], priority=1)
-
-# Run deduplication
-dedup.compute_hashes()
-report = dedup.find_duplicates()
-unique = dedup.get_unique_images()
-
-# Save report
-dedup.generate_report("outputs/my_dedup_report.json")
-```
-
 ## Important Notes
 
 **Seed Management**:
@@ -277,7 +274,7 @@ dedup.generate_report("outputs/my_dedup_report.json")
 - fastai's `set_seed(42, reproducible=True)` for additional determinism
 
 **Model Export Verification**:
-- Training notebook (cell 34) includes 5-step verification:
+- Training notebook includes 5-step verification:
   1. Load best model checkpoint
   2. Verify validation performance
   3. Test on external dataset

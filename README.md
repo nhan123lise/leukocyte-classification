@@ -5,7 +5,7 @@ Deep learning model for classifying five types of white blood cells (leukocytes)
 ## Project Overview
 
 - **Course**: Computer Vision (Curs 295II022)
-- **Objective**: Develop a CNN/ViT model to classify leukocytes with ≥92% accuracy on external dataset
+- **Objective**: Develop a CNN/ViT model to classify leukocytes with >=92% accuracy on external dataset
 - **Dataset**: 2,500 labeled images (500 per class)
 - **Classes**: Basophil, Eosinophil, Lymphocyte, Monocyte, Neutrophil
 
@@ -30,7 +30,7 @@ The project is divided into three stages, each with its own Jupyter notebook:
 jupyter notebook
 
 # Then run notebooks in order:
-# 1. notebooks/01_data_preparation.ipynb
+# 1. 01_data_preparation.py (or notebook)
 # 2. notebooks/02_model_training.ipynb
 # 3. notebooks/03_model_evaluation.ipynb
 ```
@@ -43,8 +43,8 @@ jupyter notebook
 
 ### Stage 2: Model Training
 - Load data using fastai
-- Train CNN (ResNet34 recommended) or ViT
-- Optimize hyperparameters
+- Train CNN (ResNet34) with two-phase approach
+- Strong color augmentation for stain robustness
 - Export trained model
 - **Output**: `outputs/model.pkl`
 
@@ -69,15 +69,16 @@ cv-nhan/
 │   ├── test_second_dataset/         # External validation (monocyte only)
 │   └── test your model.ipynb        # Model loading template
 ├── notebooks/
-│   ├── 02_model_training.ipynb      # Model training (ResNet18, two-phase)
+│   ├── 02_model_training.ipynb      # Model training (ResNet34, two-phase)
 │   └── 03_model_evaluation.ipynb    # Comprehensive evaluation
 ├── outputs/
 │   ├── data_split.csv               # Train/val/test split (70/15/15)
-│   ├── model.pkl                    # Trained model (99.47% test, 100% external)
+│   ├── model.pkl                    # Trained model (99.20% test, 100% external)
 │   ├── model_metadata.json          # Model export metadata
-│   └── figures/                     # 13 visualization figures
+│   └── figures/                     # Visualization figures
 ├── 01_data_preparation.py           # Data splitting script
 ├── utils.py                         # Seed management utilities
+├── stain_normalization.py           # Stain normalization utilities (optional)
 ├── report.tex                       # LaTeX source for PDF report
 ├── report.pdf                       # 2-page scientific report
 ├── PROJECT_REPORT.md                # Comprehensive markdown report
@@ -96,92 +97,96 @@ cv-nhan/
 - Python 3.11+
 - PyTorch 2.9.1
 - fastai 2.8.5
-- GPU acceleration via MPS (Apple Silicon)
+- GPU acceleration via CUDA/MPS
 
-### Model Export/Loading ✅
+### Model Export/Loading
 **VERIFIED**: Model loads correctly using only:
 ```python
 from fastai.vision.all import load_learner
 learn = load_learner('outputs/model.pkl')
 ```
 
-✅ No custom functions required
-✅ No additional libraries needed
-✅ Direct loading works perfectly
+- No custom functions required
+- No additional libraries needed
+- Direct loading works perfectly
 
 ### Grading Criteria
-- External dataset accuracy ≥ 92% = Grade 10
-- **Our achievement: 100% external accuracy** 🎯
-- Model loads correctly with `load_learner()` ✅
+- External dataset accuracy >= 92% = Grade 10
+- **Our achievement: 100% external accuracy**
+- Model loads correctly with `load_learner()`
 
 ## Current Implementation
 
-### Architecture: ResNet18 ✅
-- **Model:** ResNet18 (pretrained on ImageNet)
+### Architecture: ResNet34
+- **Model:** ResNet34 (pretrained on ImageNet)
 - **Image size:** 224x224
 - **Batch size:** 32
 - **Training:** Two-phase approach
-  - Phase 1: 20 epochs (frozen backbone, LR=0.001)
-  - Phase 2: 20 epochs (fine-tuned, LR=0.0001)
-- **Early Stopping:** Patience=3 (phase 1), Patience=5 (phase 2)
-- **Data Augmentation:** Extensive geometric and photometric transforms
+  - Phase 1: 30 epochs (frozen backbone, LR=0.001, patience=8)
+  - Phase 2: 30 epochs (fine-tuned, LR=0.0001, patience=8)
+- **Data Augmentation:** Strong color augmentation for stain robustness
+  - Brightness/Contrast: +/-40%
+  - Saturation: +/-40%
+  - Hue: +/-10%
+  - Rotation: +/-180 degrees
+  - Random crop: 75-100%
 - **Achieved accuracy:**
-  - Test set: 99.47%
+  - Validation: 99.47%
+  - Test set: 99.20%
   - External validation: 100%
 
-### Why ResNet18?
-- ✅ Excellent performance (99.47% test, 100% external)
-- ✅ Lightweight and efficient (fewer parameters than ResNet34/50)
-- ✅ Faster training and inference
-- ✅ Perfect for this dataset size (2,500 images)
+### Why ResNet34 with Color Augmentation?
+- Excellent performance (99.20% test, 100% external)
+- Strong color augmentation ensures robustness to staining variations
+- Two-phase training with early stopping prevents overfitting
+- Perfect for this dataset size (2,500 images)
 
 ## Important Notes
 
 1. **Reproducibility**: Use saved `data_split.csv` for all experiments
-2. **Overfitting**: Monitor train-validation gap; use augmentation
+2. **Stain Robustness**: Color augmentation (saturation, hue, brightness) handles different staining protocols
 3. **External Testing**: Regularly test on `test_second_dataset/`
 4. **Model Export**: Always verify model loads before submission
 
-## Deliverables ✅
+## Deliverables
 
-1. **PDF Report** (2 pages): ✅ `report.pdf`
-   - Architecture: ResNet18
+1. **PDF Report** (2 pages): `report.pdf`
+   - Architecture: ResNet34
    - Training strategy: Two-phase with early stopping
-   - Results: 99.47% test, 100% external
+   - Results: 99.20% test, 100% external
    - Data augmentation details
    - Confusion matrices and metrics
-   - Complete methodology
 
-2. **Model File**: ✅ `outputs/model.pkl`
-   - Size: 45MB
-   - Architecture: ResNet18
+2. **Model File**: `outputs/model.pkl`
+   - Architecture: ResNet34
    - Loads with: `load_learner('model.pkl')`
-   - Performance: 99.47% test, 100% external
+   - Performance: 99.20% test, 100% external
 
 3. **Submission Package**:
    ```
    LastName1_LastName2_LastName3_LastName4.zip
-   ├── model.pkl          # 45MB, ResNet18
-   └── report.pdf         # 2 pages, 622KB
+   ├── model.pkl          # ResNet34
+   └── report.pdf         # 2 pages
    ```
 
 ## Results
 
-📊 **[VIEW COMPREHENSIVE PROJECT REPORT](PROJECT_REPORT.md)** - Complete analysis with all figures and metrics
-📄 **[VIEW 2-PAGE PDF REPORT](report.pdf)** - Professional scientific paper format
+**[VIEW COMPREHENSIVE PROJECT REPORT](PROJECT_REPORT.md)** - Complete analysis with all figures and metrics
+**[VIEW 2-PAGE PDF REPORT](report.pdf)** - Professional scientific paper format
 
 **Quick Summary:**
-- ✅ Architecture: **ResNet18** (efficient and lightweight)
-- ✅ Test Accuracy: **99.47%** (373/375 correct)
-- ✅ External Validation: **100%** (9/9 perfect predictions on monocyte dataset)
-- ✅ All classes: ~100% precision/recall/F1-score
-- ✅ Fully reproducible with seed=42
+- Architecture: **ResNet34** with strong color augmentation
+- Validation Accuracy: **99.47%** (373/375 correct)
+- Test Accuracy: **99.20%** (372/375 correct)
+- External Validation: **100%** (9/9 perfect predictions on monocyte dataset)
+- All classes: ~100% precision/recall/F1-score
+- Fully reproducible with seed=42
 
 ## Documentation
 
 ### Reports
 - [report.pdf](report.pdf) - **2-page scientific paper** (submission format)
-- [PROJECT_REPORT.md](PROJECT_REPORT.md) - **Comprehensive analysis** (16KB, all figures)
+- [PROJECT_REPORT.md](PROJECT_REPORT.md) - **Comprehensive analysis** (all figures)
 
 ### Technical Documentation
 - [CLAUDE.md](CLAUDE.md) - Claude Code quick reference
@@ -194,20 +199,14 @@ learn = load_learner('outputs/model.pkl')
 
 ## Submission Checklist
 
-### ⚠️ Required Actions Before Submission
+### Required Actions Before Submission
 
-**1. Add Student Information to Report** ❌
+**1. Add Student Information to Report**
 The PDF report needs student names and IDs. Either:
 - Edit `report.tex` and recompile, OR
 - Use a PDF editor to add names/IDs to `report.pdf`
 
-Required information:
-- Student 1: Name and ID
-- Student 2: Name and ID
-- Student 3: Name and ID
-- Student 4: Name and ID (if applicable)
-
-**2. Test Model with Provided Notebook** ⚠️
+**2. Test Model with Provided Notebook**
 Verify model loads correctly using the exact test procedure:
 ```bash
 # Copy model to test location
@@ -215,27 +214,9 @@ cp outputs/model.pkl "Dataset and Notebook-20251115/"
 
 # Open and run the provided test notebook
 jupyter notebook "Dataset and Notebook-20251115/test your model.ipynb"
-
-# Verify:
-# - Model loads with: load_learner('model.pkl')
-# - Predictions work on sample images
-# - No errors or warnings
 ```
 
-**3. Check Atenea Upload Size Limit** ⚠️
-- Current model size: **45MB**
-- If this exceeds Atenea's limit:
-  1. Upload `outputs/model.pkl` to Google Drive
-  2. Grant access to: `kevin.barrera@upc.edu`
-  3. Add Drive link in `report.pdf`
-
-**4. Create Submission ZIP** ❌
-**Naming format:**
-```
-LastName_Student1_LastName_Student2_LastName_Student3_LastName_Student4.zip
-```
-
-**Steps:**
+**3. Create Submission ZIP**
 ```bash
 # Prepare submission folder
 mkdir -p submission
@@ -245,14 +226,7 @@ cp report.pdf submission/
 # Create ZIP (replace with actual student last names)
 cd submission
 zip ../Garcia_Lopez_Martinez_Rodriguez.zip model.pkl report.pdf
-
-# Verify ZIP contents
-unzip -l ../Garcia_Lopez_Martinez_Rodriguez.zip
 ```
-
-**ZIP must contain exactly:**
-- `model.pkl` (45MB, ResNet18)
-- `report.pdf` (2 pages, 622KB)
 
 ### Final Verification Checklist
 
@@ -261,21 +235,19 @@ unzip -l ../Garcia_Lopez_Martinez_Rodriguez.zip
 - [ ] Model loads with `load_learner()` only
 - [ ] ZIP file named correctly (LastName_LastName_LastName_LastName.zip)
 - [ ] ZIP contains both model.pkl and report.pdf
-- [ ] Google Drive link added to report (if model exceeds upload limit)
-- [ ] Drive access granted to kevin.barrera@upc.edu (if using Drive)
 
 ### Performance Summary
 
 **External Dataset:**
 - Achieved: **100% accuracy** (9/9 monocyte images)
-- Requirement: ≥92% for grade 10
+- Requirement: >=92% for grade 10
 
 **Requirements Met:**
-- ✅ Model loads with `load_learner()` only
-- ✅ 2-page PDF report with all sections
-- ✅ Training/validation/test plots
-- ✅ Confusion matrix
-- ✅ Complete reproducibility
+- Model loads with `load_learner()` only
+- 2-page PDF report with all sections
+- Training/validation/test plots
+- Confusion matrix
+- Complete reproducibility
 
 ## Deadline
 
@@ -288,4 +260,4 @@ unzip -l ../Garcia_Lopez_Martinez_Rodriguez.zip
 
 ---
 
-**Good luck with your submission!** 🚀
+**Good luck with your submission!**
