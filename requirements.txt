@@ -30,3 +30,6 @@ seaborn>=0.13.0
 # Image deduplication
 imagehash>=4.3.1
 tqdm>=4.65.0
+
+# Stain normalization (GPU-accelerated)
+torchstain>=1.4.0
