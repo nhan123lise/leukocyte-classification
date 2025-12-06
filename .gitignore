@@ -75,7 +75,7 @@ debug_predictions.py
 
 # Output files (keep metadata, ignore large model files)
 outputs/models/*.pth
-outputs/models/*.pkl
+# outputs/models/*.pkl
 
 # Keep PDFs and markdown reports for version control
 # report.pdf is tracked
