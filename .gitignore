@@ -32,7 +32,6 @@ wheels/
 .venv
 
 # Model files
-*.pkl
 *.pth
 *.pt
 *.h5
@@ -65,7 +64,6 @@ wheels/
 *.fdb_latexmk
 
 # Project specific
-model.pkl
 *.zip
 
 # Test/verification scripts (not needed for submission)
