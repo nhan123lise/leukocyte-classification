@@ -2,11 +2,11 @@
 
 ## Executive Summary
 
-This project implements a deep learning model for classifying white blood cells (leukocytes) into 5 categories using transfer learning with ResNet34. The model achieved **99.20% accuracy** on the test set and **100% accuracy** on the external dataset, demonstrating excellent performance and generalization.
+This project implements a deep learning model for classifying white blood cells (leukocytes) into 5 categories using transfer learning with ResNet34. The model achieved **98.93% accuracy** on the test set, **100% validation accuracy**, and **100% accuracy** on the external dataset, demonstrating excellent performance and generalization.
 
 **Key Achievements:**
-- Validation Accuracy: **99.47%** (373 out of 375 images correctly classified)
-- Test Set Accuracy: **99.20%** (372 out of 375 images correctly classified)
+- Validation Accuracy: **100%** (375 out of 375 images correctly classified)
+- Test Set Accuracy: **98.93%** (371 out of 375 images correctly classified)
 - External Dataset Accuracy: **100%** (9/9 perfect predictions)
 - Per-class Performance: All classes show ~100% precision, recall, and F1-score
 - Architecture: ResNet34 with strong color augmentation
@@ -61,7 +61,7 @@ Develop a computer vision model to automatically classify microscopic images of 
 - **Learning Rate:** 0.001
 - **Epochs:** 30 (with early stopping, patience=8)
 - **Purpose:** Adapt the classifier to leukocyte images without disrupting pretrained features
-- **Result:** 99.47% validation accuracy
+- **Result:** Rapid convergence, preparing model for fine-tuning
 
 ![Phase 1 Training](outputs/figures/training_loss_phase1.png)
 
@@ -69,10 +69,10 @@ Develop a computer vision model to automatically classify microscopic images of 
 
 #### Phase 2: Fine-tuning
 - **Approach:** Unfreeze entire network and fine-tune all layers
-- **Learning Rate:** 0.0001 (reduced for stability)
+- **Learning Rate:** 0.00001 (smaller for stability)
 - **Epochs:** 30 (with early stopping, patience=8)
 - **Purpose:** Fine-tune deeper features for optimal performance
-- **Result:** Early stopping triggered at epoch 0 (model already optimal)
+- **Result:** 100% validation accuracy achieved
 
 ![Phase 2 Training](outputs/figures/training_loss_phase2.png)
 
@@ -123,8 +123,8 @@ This ensures identical results across multiple runs.
 The model achieved exceptional performance on the held-out test set:
 
 **Overall Metrics:**
-- **Accuracy:** 99.20% (372/375 correct predictions)
-- **Error Rate:** 0.80% (only 3 misclassifications)
+- **Accuracy:** 98.93% (371/375 correct predictions)
+- **Error Rate:** 1.07% (only 4 misclassifications)
 
 ![Confusion Matrix - Test Set](outputs/figures/confusion_matrix_test.png)
 
@@ -144,22 +144,22 @@ All five classes demonstrate exceptional performance:
 |-------|-----------|--------|----------|---------|
 | Basophil | 1.0000 | 1.0000 | 1.0000 | 75 |
 | Eosinophil | 1.0000 | 1.0000 | 1.0000 | 75 |
-| Lymphocyte | 0.9740 | 1.0000 | 0.9868 | 75 |
+| Lymphocyte | 0.9867 | 0.9867 | 0.9867 | 75 |
 | Monocyte | 0.9865 | 0.9733 | 0.9799 | 75 |
-| Neutrophil | 1.0000 | 0.9867 | 0.9933 | 75 |
-| **Accuracy** | -- | -- | **0.9920** | **375** |
+| Neutrophil | 0.9737 | 0.9867 | 0.9801 | 75 |
+| **Accuracy** | -- | -- | **0.9893** | **375** |
 
 **Key Observations:**
 - Basophil and Eosinophil: Perfect 100% across all metrics
-- Lymphocyte: 97.40% precision, 100% recall
+- Lymphocyte: 98.67% precision, 98.67% recall
 - Monocyte: 98.65% precision, 97.33% recall
-- Neutrophil: 100% precision, 98.67% recall
+- Neutrophil: 97.37% precision, 98.67% recall
 
 ### 3.3 Validation Set Performance
 
 ![Confusion Matrix - Validation Set](outputs/figures/confusion_matrix_validation.png)
 
-*Figure 7: Validation set confusion matrix showing similar high performance (99.47% accuracy)*
+*Figure 7: Validation set confusion matrix showing perfect performance (100% accuracy)*
 
 ### 3.4 External Dataset Evaluation
 
@@ -192,15 +192,15 @@ The model was tested on an external dataset to assess generalization capability.
 
 ### 4.1 Misclassified Examples
 
-Out of 375 test images, only 3 were misclassified:
+Out of 375 test images, only 4 were misclassified:
 
 ![Misclassified Examples](outputs/figures/incorrect_predictions.png)
 
-*Figure 10: The 3 misclassified images*
+*Figure 10: The 4 misclassified images*
 
 **Analysis:**
-- **Error Rate:** <1% (3 out of 375 images)
-- **Errors:** 2 monocytes and 1 neutrophil misclassified
+- **Error Rate:** 1.07% (4 out of 375 images)
+- **Errors:** 2 monocytes, 1 lymphocyte, and 1 neutrophil misclassified
 - **Key Finding:** Minimal error rate demonstrates robust discrimination across all 5 leukocyte types
 
 ### 4.2 Correctly Classified Examples
@@ -280,9 +280,9 @@ cv-nhan/
 ## 7. Key Findings and Insights
 
 ### 7.1 Model Performance
-1. **Exceptional Accuracy:** 99.20% test accuracy demonstrates that ResNet34 transfer learning is highly effective for leukocyte classification
+1. **Exceptional Accuracy:** 98.93% test accuracy and 100% validation accuracy demonstrates that ResNet34 transfer learning is highly effective for leukocyte classification
 2. **Balanced Performance:** All five classes achieve near-perfect metrics, showing no class-specific weaknesses
-3. **Minimal Errors:** Only 3 errors out of 375 test images (<1% error rate)
+3. **Minimal Errors:** Only 4 errors out of 375 test images (1.07% error rate)
 4. **Perfect External Validation:** 100% accuracy (9/9) on external monocyte dataset demonstrates excellent generalization
 
 ### 7.2 Training Insights
@@ -344,7 +344,7 @@ The reproducibility has been verified by:
 ## 9. Future Work and Recommendations
 
 ### 9.1 Model Improvements
-**Note:** Current ResNet34 already achieves 99.20% test and 100% external accuracy. Further improvements are optional:
+**Note:** Current ResNet34 already achieves 98.93% test, 100% validation, and 100% external accuracy. Further improvements are optional:
 
 1. **Current approach is optimal:** Strong color augmentation + ResNet34 achieves excellent results
 2. **Ensemble Methods:** Combine multiple models for improved robustness (if needed)
@@ -366,7 +366,7 @@ The reproducibility has been verified by:
 
 ## 10. Conclusion
 
-This leukocyte classification project demonstrates that deep learning with transfer learning and strong color augmentation can achieve exceptional performance (99.20% test accuracy, 100% external accuracy) on medical image classification tasks.
+This leukocyte classification project demonstrates that deep learning with transfer learning and strong color augmentation can achieve exceptional performance (98.93% test accuracy, 100% validation accuracy, 100% external accuracy) on medical image classification tasks.
 
 **Key Success Factors:**
 - ResNet34 architecture with ImageNet pretraining
@@ -407,13 +407,13 @@ The project provides a strong foundation for:
 ---
 
 **Project Status:** COMPLETE
-**Model Performance:** 99.20% Test Accuracy, 100% External Accuracy
+**Model Performance:** 98.93% Test Accuracy, 100% Validation Accuracy, 100% External Accuracy
 **Reproducibility:** Fully Reproducible (seed=42)
 **Ready for:** Research, Education, Further Development
 
 ---
 
-*Report Generated: 2025-12-06*
+*Report Generated: 2025-12-11*
 *Model: ResNet34 with fastai 2.8.5*
 *Framework: PyTorch 2.9.1*
-*Performance: 99.20% Test Accuracy | 100% External Validation*
+*Performance: 98.93% Test Accuracy | 100% Validation Accuracy | 100% External Validation*

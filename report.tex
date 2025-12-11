@@ -1,5 +1,5 @@
 \documentclass[10pt,twocolumn]{article}
-\usepackage[margin=0.75in]{geometry}
+\usepackage[margin=0.6in]{geometry}
 \usepackage{graphicx}
 \usepackage{booktabs}
 \usepackage{amsmath}
@@ -16,7 +16,7 @@
 \captionsetup{font=small,labelfont=bf}
 
 \title{\vspace{-1.5em}\textbf{\Large Deep Learning for Leukocyte Classification}\vspace{-0.5em}}
-\author{\small Computer Vision Course (Curs 295II022)}
+\author{Herreman Victor (YPMLDPJG1), Ra\"is Walid (B4HR02A95),\\Nguyen Thi Thanh Nhan (C8922558), Wagner Paula (L86MMZ5KJ)\\[0.2em]Computer Vision Course (Curs 295II022)}
 \date{\vspace{-1em}}
 
 \begin{document}
@@ -41,7 +41,7 @@ Training followed a two-phase approach:
 
 \textbf{Phase 1 - Frozen Backbone:} The ResNet34 backbone was frozen while training only the custom classification head for 30 epochs (learning rate: 0.001). Early stopping with patience=8 monitored validation loss.
 
-\textbf{Phase 2 - Fine-tuning:} All layers were unfrozen and fine-tuned with a reduced learning rate (0.0001) and early stopping patience=8. This allowed the model to adapt deeper features specifically for leukocyte morphology.
+\textbf{Phase 2 - Fine-tuning:} All layers were unfrozen and fine-tuned with a smaller learning rate (0.00001) and early stopping patience=8. This allowed the model to adapt deeper features specifically for leukocyte morphology.
 
 \subsection{Data Augmentation for Stain Robustness}
 Strong color augmentation was applied to ensure robustness to different staining protocols:
@@ -53,7 +53,7 @@ Strong color augmentation was applied to ensure robustness to different staining
 \section{Results}
 
 \subsection{Overall Performance}
-The model achieved exceptional performance: \textbf{99.47\% validation accuracy} and \textbf{99.20\% test accuracy} (372 out of 375 images correctly classified). Only three images were misclassified.
+The model achieved exceptional performance: \textbf{100\% validation accuracy} and \textbf{98.93\% test accuracy} (371 out of 375 images correctly classified). Only four images were misclassified.
 
 \begin{table}[h]
 \centering
@@ -66,11 +66,11 @@ The model achieved exceptional performance: \textbf{99.47\% validation accuracy}
 \midrule
 Basophil   & 1.0000 & 1.0000 & 1.0000 & 75 \\
 Eosinophil & 1.0000 & 1.0000 & 1.0000 & 75 \\
-Lymphocyte & 0.9740 & 1.0000 & 0.9868 & 75 \\
+Lymphocyte & 0.9867 & 0.9867 & 0.9867 & 75 \\
 Monocyte   & 0.9865 & 0.9733 & 0.9799 & 75 \\
-Neutrophil & 1.0000 & 0.9867 & 0.9933 & 75 \\
+Neutrophil & 0.9737 & 0.9867 & 0.9801 & 75 \\
 \midrule
-\textbf{Accuracy} & -- & -- & \textbf{0.9920} & \textbf{375} \\
+\textbf{Accuracy} & -- & -- & \textbf{0.9893} & \textbf{375} \\
 \bottomrule
 \end{tabular}
 \end{table}
@@ -78,17 +78,17 @@ Neutrophil & 1.0000 & 0.9867 & 0.9933 & 75 \\
 Table~\ref{tab:metrics} shows basophil and eosinophil achieved perfect scores, with three other classes showing 1-2 errors each.
 
 \subsection{Confusion Matrix}
-Figure~\ref{fig:confusion} presents the confusion matrix for the test set, demonstrating exceptional classification performance with \textbf{no significant confusion patterns}. The matrix shows 99.20\% accuracy with only 3 errors out of 375 predictions.
+Figure~\ref{fig:confusion} presents the confusion matrix for the test set, demonstrating exceptional classification performance with \textbf{no significant confusion patterns}. The matrix shows 98.93\% accuracy with only 4 errors out of 375 predictions.
 
 \begin{figure}[h]
 \centering
-\includegraphics[width=0.95\linewidth]{outputs/figures/confusion_matrix_test.png}
-\caption{Confusion matrix showing near-perfect classification (99.20\% accuracy) with no significant confusion patterns.}
+\includegraphics[width=0.9\linewidth]{outputs/figures/confusion_matrix_test.png}
+\caption{Confusion matrix showing near-perfect classification (98.93\% accuracy) with no significant confusion patterns.}
 \label{fig:confusion}
 \end{figure}
 
 \subsection{Training Dynamics}
-Figure~\ref{fig:training} illustrates the training and validation loss curves for both training phases. Phase 1 shows rapid convergence with the frozen backbone, achieving 99.47\% validation accuracy. The close alignment between training and validation curves indicates no overfitting.
+Figure~\ref{fig:training} illustrates the training and validation loss curves for both training phases. Phase 1 shows rapid convergence with the frozen backbone. Phase 2 fine-tuning with a smaller learning rate (0.00001) achieved 100\% validation accuracy. The close alignment between training and validation curves indicates no overfitting.
 
 \begin{figure}[h]
 \centering
@@ -106,22 +106,22 @@ Figure~\ref{fig:training} illustrates the training and validation loss curves fo
 \end{figure}
 
 \subsection{Per-Class Analysis}
-Figure~\ref{fig:perclass} visualizes precision, recall, and F1-scores for each class, demonstrating balanced performance across all leukocyte types with no class-specific weaknesses.
+Figure~\ref{fig:perclass} visualizes precision, recall, and F1-scores for each class, demonstrating consistently high performance across all leukocyte types.
 
 \begin{figure}[h]
 \centering
-\includegraphics[width=0.95\linewidth]{outputs/figures/per_class_metrics.png}
+\includegraphics[width=0.9\linewidth]{outputs/figures/per_class_metrics.png}
 \caption{Per-class performance metrics showing balanced high performance across all five leukocyte types.}
 \label{fig:perclass}
 \end{figure}
 
 \section{Error Analysis}
 
-Only 3 out of 375 test images were misclassified (0.80\% error rate), with \textbf{no significant confusion patterns}:
+Only 4 out of 375 test images were misclassified (1.07\% error rate), with \textbf{no significant confusion patterns}:
 
 \begin{itemize}
     \item \textbf{Robust Classification:} Model distinguishes all 5 cell types with near-perfect accuracy
-    \item \textbf{No Systematic Errors:} The 3 errors show no pattern indicating class confusion
+    \item \textbf{No Systematic Errors:} The 4 errors show no pattern indicating class confusion
     \item \textbf{Balanced Performance:} Two classes achieve 100\%; three classes with 1-2 errors each
 \end{itemize}
 
@@ -138,12 +138,11 @@ Complete reproducibility was ensured through comprehensive seed management (seed
 This project demonstrates that transfer learning with ResNet34 and strong color augmentation achieves exceptional performance for leukocyte classification:
 
 \begin{itemize}
-    \item \textbf{99.20\% test accuracy} with only 3 errors out of 375 images
-    \item Balanced performance across all five cell types
+    \item \textbf{98.93\% test accuracy} with only 4 errors out of 375 images
+    \item \textbf{100\% validation accuracy} demonstrating excellent model fit
     \item \textbf{100\% external validation} (9/9 monocyte images)
     \item Strong color augmentation ensures robustness to staining variations
     \item No overfitting through proper regularization and early stopping
-    \item Complete reproducibility through seed management
 \end{itemize}
 
 The two-phase training strategy efficiently adapts pretrained features to medical imaging, achieving clinical-grade performance suitable for automated blood cell analysis.

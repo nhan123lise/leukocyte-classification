@@ -6,13 +6,13 @@ This file provides guidance to Claude Code (claude.ai/code) when working with co
 
 **Completed Computer Vision Project**: Leukocyte (white blood cell) classification using ResNet34 with transfer learning.
 
-**Current Status**: Production-ready model achieving 99.20% test accuracy and 100% external validation.
+**Current Status**: Production-ready model achieving 98.93% test accuracy, 100% validation accuracy, and 100% external validation.
 
 **Dataset**: 2,500 labeled images (500 per class) of 5 leukocyte types: basophil, eosinophil, lymphocyte, monocyte, neutrophil.
 
 **Key Achievement**: ResNet34 model achieves:
-- Validation Set: 99.47% accuracy (373/375 correct)
-- Test Set: 99.20% accuracy (372/375 correct)
+- Validation Set: 100% accuracy (375/375 correct)
+- Test Set: 98.93% accuracy (371/375 correct)
 - External Dataset: 100% accuracy (9/9 monocyte images)
 - Fully reproducible with seed=42
 
@@ -75,7 +75,7 @@ rm -f report.aux report.log report.out
 - Architecture: ResNet34 (pretrained on ImageNet)
 - Two-phase training:
   - Phase 1: 30 epochs frozen backbone (LR=0.001, patience=8)
-  - Phase 2: 30 epochs fine-tuning (LR=0.0001, patience=8)
+  - Phase 2: 30 epochs fine-tuning (LR=0.00001, patience=8)
 - Data augmentation for stain robustness:
   - Geometric: rotation ±180°, flips, crop 75-100%, warp 0.2
   - Color: brightness/contrast ±40%, saturation ±40%, hue ±10%
@@ -108,7 +108,7 @@ rm -f report.aux report.log report.out
 
 **Why ResNet34?**
 - 21.8M parameters - good capacity for 5-class medical imaging task
-- Achieves 99.20% test accuracy and 100% external validation
+- Achieves 98.93% test accuracy, 100% validation accuracy, and 100% external validation
 - Strong color augmentation ensures robustness to staining variations
 - Two-phase training with early stopping prevents overfitting
 
@@ -161,7 +161,7 @@ cv-nhan/
 │   └── neutrophil/                 # 13,690 images
 ├── outputs/
 │   ├── data_split.csv              # 70/15/15 split (reproducible)
-│   ├── model.pkl                   # Trained ResNet34 (99.20% test, 100% external)
+│   ├── model.pkl                   # Trained ResNet34 (98.93% test, 100% val, 100% external)
 │   ├── model_metadata.json         # Export timestamp, hyperparams, metrics
 │   ├── external_manifest.csv       # External dataset manifest with hashes
 │   ├── dedup_report.json           # Deduplication statistics
@@ -192,21 +192,22 @@ cv-nhan/
 
 | Metric | Validation | Test Set | External Dataset |
 |--------|------------|----------|------------------|
-| Accuracy | 99.47% | 99.20% | 100% |
-| Errors | 2/375 | 3/375 | 0/9 |
+| Accuracy | 100% | 98.93% | 100% |
+| Errors | 0/375 | 4/375 | 0/9 |
 
-**Test Set Errors** (3 total):
-- 2 monocytes misclassified as lymphocyte/neutrophil
-- 1 neutrophil misclassified as monocyte
+**Test Set Errors** (4 total):
+- 2 monocytes misclassified
+- 1 lymphocyte misclassified
+- 1 neutrophil misclassified
 
 **Per-Class Test Metrics**:
 | Class | Precision | Recall | F1-Score |
 |-------|-----------|--------|----------|
 | basophil | 1.0000 | 1.0000 | 1.0000 |
 | eosinophil | 1.0000 | 1.0000 | 1.0000 |
-| lymphocyte | 0.9740 | 1.0000 | 0.9868 |
+| lymphocyte | 0.9867 | 0.9867 | 0.9867 |
 | monocyte | 0.9865 | 0.9733 | 0.9799 |
-| neutrophil | 1.0000 | 0.9867 | 0.9933 |
+| neutrophil | 0.9737 | 0.9867 | 0.9801 |
 
 ## Deliverables
 
@@ -219,7 +220,7 @@ LastName1_LastName2_LastName3_LastName4.zip
 
 **Report Contents**:
 - Architecture: ResNet34 with two-phase training
-- Results: 99.20% test, 100% external
+- Results: 98.93% test, 100% validation, 100% external
 - Data augmentation details (color augmentation for stain robustness)
 - Confusion matrices and training curves
 - Error analysis
