@@ -79,3 +79,4 @@ outputs/models/*.pth
 # report.pdf is tracked
 # PROJECT_REPORT.md is tracked
 /data_external*
+.envrc
